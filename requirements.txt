@@ -1,0 +1,8 @@
+jupyter
+ipykernel
+
+pandas
+langchain
+langchain-experimental
+langchain-ollama
+tabulate
