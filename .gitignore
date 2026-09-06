@@ -1,3 +1,5 @@
 .env
 .venv/
-_bckp/
+__pycache__/
+*.py[cod]
+.streamlit/
