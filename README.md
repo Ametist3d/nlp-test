@@ -6,11 +6,11 @@ The project contains two implementations:
 
 - `dataframe_bot/` — minimal implementation focused on the assignment requirement: create the agent once and provide the DataFrame at runtime.
 
-**bold**this version can be tested on [Link text](http://46.225.185.220:8501)
+*this version can be tested on* [dataframe_bot](http://46.225.185.220:8501)
 
 - `dataframe_bot_advanced/` — extended version for wider/larger datasets with compact DataFrame context, bounded tool output, structured results, and short conversation history.
 
-**bold**this version can be tested on [Link text](http://46.225.185.220:8502)
+*this version can be tested on* [dataframe_bot_advanced](http://46.225.185.220:8502)
 ---
 
 ## Project structure
