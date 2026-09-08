@@ -1,75 +1,113 @@
-# Artidis DataFrame Analysis Bot
+# DataFrame Bot
 
-Small Streamlit demo for querying CSV data with an LLM-driven Pandas agent.
+LLM-powered CSV analysis built with LangChain and Pandas.
+---
+The project contains two implementations:
 
-## Architecture
+- `dataframe_bot/` — minimal implementation focused on the assignment requirement: create the agent once and provide the DataFrame at runtime.
+
+**bold**this version can be tested on [Link text](http://46.225.185.220:8501)
+
+- `dataframe_bot_advanced/` — extended version for wider/larger datasets with compact DataFrame context, bounded tool output, structured results, and short conversation history.
+
+**bold**this version can be tested on [Link text](http://46.225.185.220:8502)
+---
+
+## Project structure
 
 ```text
-Streamlit UI
-    ↓
-DataFrameBot
-    ↓
-LangChain agent + Groq
-    ↓
-execute_dataframe_code
-    ↓
-Pandas / runtime DataFrame
+nlp-test/
+├── dataframe_bot/
+├── dataframe_bot_advanced/
+├── sample_data/
+├── requirements.txt
+└── .env
 ```
 
-The agent is initialized without a DataFrame. The current DataFrame is injected through LangChain runtime context for each `ask(question, data)` invocation. LLM-generated Pandas code is executed by the tool, and exact computed values are stored in agent state. The LLM is then used only to summarize those computed values.
+## Setup
 
-## Configuration
-
-Copy the environment template:
-
-```bash
-cp .env.example .env
-```
-
-Set:
-
-```env
-GROQ_API_KEY=...
-GROQ_MODEL=...
-```
-
-The selected Groq model must support tool calling.
-
-## Run locally
-
-Python 3.13 is recommended.
+Python 3.13+ is recommended.
 
 ```bash
 python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-streamlit run app.py
 ```
 
-On Windows PowerShell, activate with:
+Windows:
 
 ```powershell
-.venv\Scripts\Activate.ps1
+.\.venv\Scripts\activate
 ```
 
-## Run with Docker
+Linux/macOS:
 
 ```bash
-docker compose up --build -d
+source .venv/bin/activate
 ```
 
-Open:
+Install dependencies:
 
-```text
-http://<server-ip>:8501
+```bash
+pip install -r requirements.txt
 ```
 
-The app supports the bundled `physical_exam_study.csv` and arbitrary CSV uploads.
+Create `.env` in the project root:
 
-## Trade-offs
+```env
+GROQ_API_KEY=your_groq_api_key
+GROQ_MODEL=openai/gpt-oss-120b
+```
 
-- Pandas is appropriate for the assignment-sized datasets and keeps the solution simple.
-- The DataFrame is passed per invocation rather than bound to the agent at initialization.
-- Numeric results come from executed Pandas code, not from LLM-generated prose.
-- `PythonAstREPLTool` executes generated Python code. Docker provides process isolation from the host, but it is not a complete security sandbox. A production deployment should use stronger execution isolation and authentication.
-- Remote storage such as Google Drive, databases, n8n, or MCP is intentionally excluded from this demo and can be added later through a data-source abstraction.
+## Run
+
+Minimal version:
+
+```bash
+streamlit run dataframe_bot/app.py
+```
+
+Advanced version:
+
+```bash
+streamlit run dataframe_bot_advanced/app.py
+```
+
+The sample CSV is loaded by default. Uploading another CSV replaces it for the current session.
+
+## Docker
+
+Minimal version:
+
+```bash
+docker compose -f dataframe_bot/compose.yaml up --build -d
+```
+
+Advanced version:
+
+```bash
+docker compose -f dataframe_bot_advanced/compose.yaml up --build -d
+```
+
+## Core idea
+
+Unlike the standard Pandas agent, the DataFrame is not bound when the agent is created:
+
+```python
+agent = create_pandas_dataframe_agent(llm)
+
+result = agent.invoke(
+    {"messages": [{"role": "user", "content": question}]},
+    context=DataFrameContext(data=df),
+)
+```
+
+The same agent can therefore be reused with different DataFrames at runtime.
+
+## Example questions
+
+- What is the mean and standard deviation of intensity for men?
+- What are the minimum and maximum pain scores for women?
+- What is the Pearson correlation between intensity and pain score overall and by gender?
+
+## Note
+
+`PythonAstREPLTool` executes model-generated Python code. The demo should be treated as a trusted/local environment rather than a public code-execution service.
