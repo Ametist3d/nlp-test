@@ -1,0 +1,10 @@
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: dataframe_bot/Dockerfile
+    env_file:
+      - ../.env
+    ports:
+      - "8501:8501"
+    restart: unless-stopped
